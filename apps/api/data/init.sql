@@ -15,7 +15,9 @@ CREATE TABLE IF NOT EXISTS factor_snapshot(
   book_ttm REAL,
   invested_capital_ttm REAL,
   nopat_ttm REAL,
-  roic REAL
+  roic REAL,
+  debt REAL,
+  cash REAL
 );
 
 CREATE TABLE IF NOT EXISTS last_price(

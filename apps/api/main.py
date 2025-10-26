@@ -4,12 +4,11 @@ import sqlite3, time, os
 import yfinance as yf
 
 app = FastAPI(title="Screener API")
-
-# CORS για Next.js dev
+# DEV μόνο:
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:3000", "http://127.0.0.1:3000"],
-    allow_credentials=True,
+    allow_origins=["*"],  # προσωρινά
+    allow_credentials=False,
     allow_methods=["*"],
     allow_headers=["*"],
 )
@@ -22,19 +21,30 @@ def db():
 
 @app.get("/api/screener")
 def screener(roic_min: float | None = None, limit: int = 200):
-    q = """SELECT s.symbol, s.name, f.roic, f.ttm_eps, f.ebitda_ttm, f.book_ttm, s.shares_out
-           FROM factor_snapshot f JOIN symbols s USING(symbol)
-           WHERE 1=1"""
+    q = """
+    SELECT
+        s.symbol, s.name,
+        f.roic, f.ttm_eps, f.ebitda_ttm, f.book_ttm,
+        s.shares_out, f.debt, f.cash
+    FROM factor_snapshot f
+    JOIN symbols s USING(symbol)
+    WHERE 1=1
+    """
     params = []
     if roic_min is not None:
         q += " AND f.roic >= ?"; params.append(roic_min)
     q += " ORDER BY s.symbol LIMIT ?"; params.append(limit)
-    cur = db().execute(q, params)
+
+    conn = db()
+    cur = conn.execute(q, params)
+    rows = cur.fetchall()
     out = [{
         "symbol": r[0], "name": r[1], "roic": r[2], "ttm_eps": r[3],
-        "ebitda_ttm": r[4], "book_ttm": r[5], "shares_out": r[6]
-    } for r in cur.fetchall()]
+        "ebitda_ttm": r[4], "book_ttm": r[5], "shares_out": r[6],
+        "debt": r[7], "cash": r[8],
+    } for r in rows]
     return {"items": out}
+
 
 @app.get("/api/price")
 def price(symbols: str = Query(..., description="CSV e.g. AAPL,MSFT")):

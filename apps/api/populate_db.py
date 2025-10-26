@@ -18,16 +18,21 @@ symbols = [
 con.executemany("INSERT OR REPLACE INTO symbols VALUES (?,?,?,?,?,?)", symbols)
 
 snap = [
-    ("AAPL","2025-09-30", 6.4, 140_000_000_000, 75_000_000_000, 200_000_000_000, 110_000_000_000, 0.55),
-    ("MSFT","2025-09-30",11.2, 130_000_000_000,175_000_000_000, 220_000_000_000, 100_000_000_000, 0.45),
-    ("NVDA","2025-09-30",17.0,  80_000_000_000, 60_000_000_000,  70_000_000_000,  60_000_000_000, 0.86),
+    ("AAPL","2025-09-30", 6.4, 140_000_000_000, 75_000_000_000,
+     200_000_000_000, 110_000_000_000, 0.55, 120_000_000_000, 70_000_000_000),
+    ("MSFT","2025-09-30",11.2, 130_000_000_000,175_000_000_000,
+     220_000_000_000, 100_000_000_000, 0.45, 100_000_000_000, 90_000_000_000),
+    ("NVDA","2025-09-30",17.0,  80_000_000_000, 60_000_000_000,
+      70_000_000_000,  60_000_000_000, 0.86,  60_000_000_000, 40_000_000_000),
 ]
-con.executemany(
-    """INSERT OR REPLACE INTO factor_snapshot
-       (symbol,asof,ttm_eps,ebitda_ttm,book_ttm,invested_capital_ttm,nopat_ttm,roic)
-       VALUES (?,?,?,?,?,?,?,?)""",
-    snap,
-)
+
+con.executemany("""
+INSERT OR REPLACE INTO factor_snapshot
+(symbol,asof,ttm_eps,ebitda_ttm,book_ttm,invested_capital_ttm,
+ nopat_ttm,roic,debt,cash)
+VALUES (?,?,?,?,?,?,?,?,?,?)
+""", snap)
+
 
 con.commit()
 con.close()
