@@ -1,1 +1,24 @@
+# Python cache
+__pycache__/
+*.pyc
+
+# Node modules
+node_modules/
+
+# Local envs
+.env
+.env.*
+
+# Databases and data exports
+*.db
+data/
+apps/api/data/
+!apps/api/data/init.sql
+
+# Next.js build
+.next/
+out/
+
+# Logs
+*.log
 
